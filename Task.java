@@ -1,7 +1,7 @@
 package main.Projects.FirstProject;
 
 import main.Projects.FirstProject.Exceptions.NotEmptyException;
-import main.Projects.FirstProject.Exceptions.NotNullAuthor;
+import main.Projects.FirstProject.Exceptions.NotValidAuthor;
 import main.Projects.FirstProject.Exceptions.WrongLengthOfString;
 
 public class Task {
@@ -81,7 +81,7 @@ public class Task {
         if(author != null){
             this.author = author;
         } else{
-            throw new NotNullAuthor("Автор задачи не может быть null");
+            throw new NotValidAuthor("Автор задачи не может быть null");
         }
     }
 }
