@@ -31,7 +31,7 @@ public class TaskManager {
             tasks.add(task);
             emails.add(task.getAuthor().getEmail());
         } else {
-            throw new NotValidTask("Task: " + task + " уже был добавлен ранее, значения должны быть уникальны");
+            throw new NotValidTask("Task: " + task + " уже был добавлен ранее, значения ID должны быть уникальны");
         }
     }
 
@@ -39,8 +39,11 @@ public class TaskManager {
         if(taskMap.containsKey(id)){
             Task task = taskMap.get(id);
             taskMap.remove(id);
-            emails.remove(task.getAuthor().getEmail());
             tasks.remove(task);
+            boolean stillHasTask = tasks.stream().anyMatch(element -> element.getAuthor().getEmail().equals(task.getAuthor().getEmail()));
+            if (!stillHasTask) {
+                emails.remove(task.getAuthor().getEmail());
+            }
             System.out.println("Задача с id: " + id + " успешно удалена");
         } else{
             throw new TaskNotFound("Задача с id: " + id + " не была найдена в списке задач");
@@ -59,19 +62,17 @@ public class TaskManager {
     }
 
     public List<Task> findByAuthor(String name){
-        boolean found = false;
         List<Task> authorList = new ArrayList<>();
         for(Task element: tasks){
             if(element.getAuthor().getName().equals(name)){
-                if (!found) {found = true;}
                 authorList.add(element);
             }
         }
-        if(!found){
+        if(authorList.isEmpty()){
             System.out.println("Задачи такого автора не найдены");
-            return authorList;
+        } else {
+            System.out.println(authorList);
         }
-        System.out.println(authorList);
         return authorList;
     }
 
