@@ -3,23 +3,21 @@ package com.tkachenkopetr.spring;
 import com.tkachenkopetr.spring.Exceptions.NotUniqueEmail;
 import com.tkachenkopetr.spring.Exceptions.NotValidEmail;
 import com.tkachenkopetr.spring.Exceptions.NotValidName;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 public class User {
-    private static final Pattern EMAIL_CHECKER = Pattern.compile("^\\w+([\\w-]+([\\.-]+[\\w]+)*)?@(gmail|rambler|mail|yandex)\\.(com|ru)$"); //final - UPPER_CASE
-    private static final Pattern NAME_CHECKER = Pattern.compile("^[A-Za-zА-Яа-яёЁ]+$");
-    private static Set<String> setOfEmails = new HashSet<>();
+    private static final Pattern EMAIL_CHECKER = Pattern.compile("^\\w+([.-]?\\w+)*@[A-Za-z]\\.[A-Za-z]{2,6}$"); //final - UPPER_CASE
+    private static final Pattern NAME_CHECKER = Pattern.compile("^[A-Za-zА-Яа-яёЁ]+([-\\s][A-Za-zА-Яа-яёЁ]+)*$");
+    private static final Set<String> setOfEmails = new HashSet<>();
     private String name;
     private String email;
 
     public User(String name, String email){
         validateAndSetEmail(email);
         validateAndSetName(name);
-    }
-
-    public User() {
     }
 
     public String getName() {return name;}
@@ -64,5 +62,8 @@ public class User {
         } else{
             throw new NotValidName("The name you entered is invalid. It must contain only letters.");
         }
+    }
+    public static void clearEmails() {
+        setOfEmails.clear();
     }
 }

@@ -2,20 +2,27 @@ package com.tkachenkopetr.spring;
 
 import com.tkachenkopetr.spring.Exceptions.NotValidTask;
 import com.tkachenkopetr.spring.Exceptions.TaskNotFound;
+import com.tkachenkopetr.spring.WorkingWithFiles.LoadFromFile;
+import com.tkachenkopetr.spring.WorkingWithFiles.SaveToFile;
+import org.springframework.stereotype.Component;
 
-import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Component
 public class TaskManager {
     private final List<Task> tasks;
     private final Set<String> emails;
     private final Map<Long, Task> taskMap;
+    private final SaveToFile saveToFile;
+    private final LoadFromFile loadFromFile;
 
-    public TaskManager(){
+    public TaskManager(SaveToFile saveToFile, LoadFromFile loadFromFile){
         this.tasks = new ArrayList<>();
         this.emails = new HashSet<>();
         this.taskMap = new HashMap<>();
+        this.saveToFile = saveToFile;
+        this.loadFromFile = loadFromFile;
     }
 
     public void addTask(Task task){
@@ -36,7 +43,7 @@ public class TaskManager {
             tasks.remove(task);
             System.out.println("Задача с id: " + id + " успешно удалена");
         } else{
-            throw new NotValidTask("Задача с id: " + id + " не была найдена в списке задач");
+            throw new TaskNotFound("Задача с id: " + id + " не была найдена в списке задач");
         }
     }
 
@@ -103,29 +110,16 @@ public class TaskManager {
         return descList;
     }
 
-    public void saveToFile(String file){
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(file))){
-            for(Task element: tasks){
-                writer.write(element.toFileFormat());
-                writer.newLine();
-            }
-            System.out.println("Задачи сохранены в файл: " + file);
-
-        } catch (IOException e) {
-            System.out.println("Ошибка при сохранении задач" + e.getMessage());
-        }
+    public void saveToFile(String filePath) {
+        saveToFile.saveTasksToFile(tasks, filePath);
     }
 
-    public void loadFromFile(String file){
-        try(BufferedReader reader = new BufferedReader(new FileReader(file))){
-            String part;
-            while((part = reader.readLine()) != null){
-                Task task = Task.fromString(part);
-                tasks.add(task);
-            }
-            System.out.println("Задачи успешно загружены из файла: " + file);
-        } catch (IOException e) {
-            System.out.println("Ошибка загрузки задач из файла: " + file);
-        }
+    public void loadFromFile(String filePath) {
+        tasks.clear();
+        taskMap.clear();
+        User.clearEmails();
+
+        List<Task> loadedTasks = loadFromFile.loadTasksFromFile(filePath);
+        loadedTasks.forEach(this::addTask);
     }
 }

@@ -34,10 +34,6 @@ public class Task {
     private Status status;
     private User author;
 
-    public Task() {
-        this.status = Status.TODO;
-    }
-
     public Task(String title, String description, User author){
         this.id = ++idCounter;
         checkName(title);
